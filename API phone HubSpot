@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // HubSpot API key
-const HUBSPOT_API_KEY = 'your_hubspot_api_key_here';
+const HUBSPOT_API_KEY = 'my_hubspot_api_key_here';
 
 // Function to log a call in HubSpot
 async function logCallInHubSpot(contactId, callDetails) {
