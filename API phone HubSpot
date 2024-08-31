@@ -1,0 +1,50 @@
+const axios = require('axios');
+
+// HubSpot API key
+const HUBSPOT_API_KEY = 'your_hubspot_api_key_here';
+
+// Function to log a call in HubSpot
+async function logCallInHubSpot(contactId, callDetails) {
+    try {
+        const url = `https://api.hubapi.com/engagements/v1/engagements?hapikey=${HUBSPOT_API_KEY}`;
+        
+        const engagementData = {
+            "engagement": {
+                "active": true,
+                "type": "CALL",
+                "timestamp": Date.now(),
+            },
+            "associations": {
+                "contactIds": [contactId],
+            },
+            "metadata": {
+                "toNumber": callDetails.toNumber,
+                "fromNumber": callDetails.fromNumber,
+                "status": callDetails.direction === 'sortant' ? 'COMPLETED' : 'RECEIVED', // Direction is 'sortant' or 'entrant'
+                "durationMilliseconds": callDetails.durationMilliseconds,
+                "externalId": callDetails.callId,
+                "callOutcome": callDetails.result, // Map this to HubSpot call outcomes
+                "direction": callDetails.direction, // 'sortant' or 'entrant'
+                "heure": new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) // Log time in French format
+            }
+        };
+
+        const response = await axios.post(url, engagementData);
+        console.log('Call logged successfully:', response.data);
+    } catch (error) {
+        console.error('Error logging call in HubSpot:', error);
+    }
+}
+
+// Example usage
+const callDetails = {
+    toNumber: '+15551234567',   // Customer number
+    fromNumber: '+15557654321', // Sales rep number
+    direction: 'sortant',       // 'sortant' or 'entrant'
+    durationMilliseconds: 60000, // Call duration in milliseconds
+    callId: 'abc12345',         // Unique call identifier
+    result: 'CONNECTED'         // Custom result mapping
+};
+
+// Call the function to log a call for a specific contact (replace contactId with actual ID)
+logCallInHubSpot('contactId_here', callDetails);
